@@ -67,6 +67,8 @@ TRC20 USDT is widely used for freelance payments because transaction fees are ne
 - [contract-checklist-cli](https://github.com/kleogeos/contract-checklist-cli) — scan a contract for missing clauses
 - More free tools + a paid starter kit: [kleogeos.github.io/freelancer-tools](https://kleogeos.github.io/freelancer-tools/)
 
+Free and will stay free. If it saved you time: [tip with crypto](https://kleogeos.github.io/freelancer-tools/donate.html).
+
 ## License
 
 MIT
