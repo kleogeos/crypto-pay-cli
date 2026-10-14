@@ -1,0 +1,20 @@
+name: Test CLI
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Generate a QR code URL (no network/wallet needed) and verify it's well-formed
+        run: |
+          OUT=$(python pay.py qr TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t --amount 15)
+          echo "$OUT"
+          echo "$OUT" | grep -qF "api.qrserver.com"
+          echo "$OUT" | grep -qF "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+          echo "PASS: pay.py qr produced a well-formed QR code URL"
