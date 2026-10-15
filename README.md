@@ -68,6 +68,7 @@ TRC20 USDT is widely used for freelance payments because transaction fees are ne
 - [freelance-rate-cli](https://github.com/kleogeos/freelance-rate-cli) — calculate your required hourly rate
 - [contract-checklist-cli](https://github.com/kleogeos/contract-checklist-cli) — scan a contract for missing clauses
 - [freelance-time-cli](https://github.com/kleogeos/freelance-time-cli) and [freelance-expense-cli](https://github.com/kleogeos/freelance-expense-cli) for expense tracking — track billable hours per project
+- [freelance-proposal-cli](https://github.com/kleogeos/freelance-proposal-cli) — send a client a quote before the work starts
 - More free tools + a paid starter kit: [kleogeos.github.io/freelancer-tools](https://kleogeos.github.io/freelancer-tools/)
 
 Free and will stay free. If it saved you time: [tip with crypto](https://kleogeos.github.io/freelancer-tools/donate.html).
