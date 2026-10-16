@@ -5,6 +5,20 @@ description = "Check incoming USDT (TRC20) crypto payments and generate receive 
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
+authors = [{name = "kleogeos", email = "kleogeos@gmail.com"}]
+keywords = ["usdt", "trc20", "crypto-payments", "qr-code", "cli"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://github.com/kleogeos/crypto-pay-cli"
+Repository = "https://github.com/kleogeos/crypto-pay-cli"
 
 [project.scripts]
 crypto-pay = "pay:main"
