@@ -62,6 +62,8 @@ Prints a URL to a QR code image your client can scan from a wallet app. Drop it 
 
 TRC20 USDT is widely used for freelance payments because transaction fees are near zero and it settles in seconds. Support for other chains (ERC20, Solana, etc.) can be added the same way — TronGrid's API shape generalizes to most block explorer APIs with public endpoints.
 
+[crypto-pay-js](https://github.com/kleogeos/crypto-pay-js) — same output, `npx` instead of `pip`, no install.
+
 ### Part of a small toolkit for freelancers
 
 - [freelance-invoice-cli](https://github.com/kleogeos/freelance-invoice-cli) — generate HTML invoices from JSON
