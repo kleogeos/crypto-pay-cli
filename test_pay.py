@@ -1,6 +1,12 @@
+import argparse
 import json
+import os
 import subprocess
 import sys
+from unittest import mock
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import pay  # noqa: E402
 
 PY = sys.executable
 SCRIPT = "pay.py"
@@ -41,14 +47,30 @@ def test_missing_required_address_fails():
     assert r.returncode != 0
 
 
-def test_check_with_custom_contract_and_bad_since_fails_cleanly():
+def test_check_with_bad_since_fails_cleanly_via_subprocess():
     # Needs a real network round-trip (fetch happens before --since is validated),
-    # so only assert on the failure being clean, not on its exact exit path.
+    # so a TronGrid hiccup could make this fail on the network path instead of the
+    # date-parse path (observed once in CI: a transient run hit "couldn't reach
+    # TronGrid" instead). Only assert on the failure being clean, not its exact
+    # cause — test_bad_since_message_is_specific below pins the exact message
+    # deterministically, with no network dependency.
     r = run("check", ADDRESS, "--since", "not-a-date")
     assert "Traceback" not in r.stderr
     if r.returncode != 0:
         assert "error:" in r.stderr
-        assert "invalid --since" in r.stderr
+
+
+def test_bad_since_message_is_specific():
+    # In-process, with fetch_transfers mocked out, so this can't be flaky on
+    # network/rate-limit conditions the way the subprocess version above can.
+    args = argparse.Namespace(address=ADDRESS, token="usdt", contract=None,
+                               min=None, since="not-a-date", limit=20, json=False)
+    with mock.patch.object(pay, "fetch_transfers", return_value=[]):
+        try:
+            pay.cmd_check(args)
+            raise AssertionError("expected ValueError for bad --since")
+        except ValueError as e:
+            assert "invalid --since" in str(e)
 
 
 def test_check_smoke_real_network():
