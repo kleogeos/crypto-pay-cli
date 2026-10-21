@@ -18,3 +18,5 @@ jobs:
           echo "$OUT" | grep -qF "api.qrserver.com"
           echo "$OUT" | grep -qF "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
           echo "PASS: pay.py qr produced a well-formed QR code URL"
+      - name: Run test suite (test_pay.py)
+        run: python test_pay.py
