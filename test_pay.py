@@ -21,6 +21,19 @@ def run(*args):
     return subprocess.run([PY, SCRIPT, *args], capture_output=True, text=True)
 
 
+class Skipped(Exception):
+    pass
+
+
+def skip_if_rate_limited(r):
+    # TronGrid's free tier rate-limits shared CI-runner IP ranges (observed live
+    # in this repo's own CI: HTTP 429 on a run that had nothing wrong with it).
+    # A real 429 isn't something this suite can fix or should fail the build
+    # over — surface it as inconclusive instead of a false "FAIL".
+    if "429" in r.stderr or "Too Many Requests" in r.stderr:
+        raise Skipped(r.stderr.strip())
+
+
 def test_unknown_token_fails_cleanly_no_network_needed():
     r = run("check", ADDRESS, "--token", "doge")
     assert r.returncode == 1
@@ -55,6 +68,7 @@ def test_check_with_bad_since_fails_cleanly_via_subprocess():
     # cause — test_bad_since_message_is_specific below pins the exact message
     # deterministically, with no network dependency.
     r = run("check", ADDRESS, "--since", "not-a-date")
+    skip_if_rate_limited(r)
     assert "Traceback" not in r.stderr
     if r.returncode != 0:
         assert "error:" in r.stderr
@@ -75,12 +89,14 @@ def test_bad_since_message_is_specific():
 
 def test_check_smoke_real_network():
     r = run("check", ADDRESS, "--limit", "3")
+    skip_if_rate_limited(r)
     assert r.returncode == 0, r.stderr
     assert "USDT" in r.stdout
 
 
 def test_check_json_output_is_valid_json():
     r = run("check", ADDRESS, "--limit", "2", "--json")
+    skip_if_rate_limited(r)
     assert r.returncode == 0, r.stderr
     data = json.loads(r.stdout)
     assert isinstance(data, list)
@@ -89,12 +105,16 @@ def test_check_json_output_is_valid_json():
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     failed = 0
+    skipped = 0
     for t in tests:
         try:
             t()
             print(f"PASS: {t.__name__}")
+        except Skipped as e:
+            skipped += 1
+            print(f"SKIP: {t.__name__}: {e}")
         except AssertionError as e:
             failed += 1
             print(f"FAIL: {t.__name__}: {e}")
-    print(f"\n{len(tests) - failed}/{len(tests)} passed")
+    print(f"\n{len(tests) - failed - skipped}/{len(tests)} passed ({skipped} skipped)")
     raise SystemExit(1 if failed else 0)
