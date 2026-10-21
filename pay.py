@@ -4,8 +4,10 @@
 No dependencies, no API key, no sign-up — just Python 3 and TronGrid's public API.
 """
 import argparse
+import http.client
 import json
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -42,7 +44,11 @@ def fetch_transfers(address, contract, limit=20):
 def resolve_contract(args):
     if args.contract:
         return args.contract
-    return KNOWN_TOKENS[args.token.lower()]
+    try:
+        return KNOWN_TOKENS[args.token.lower()]
+    except KeyError:
+        known = ", ".join(sorted(KNOWN_TOKENS))
+        raise ValueError(f"unknown --token '{args.token}' (known: {known}; or pass --contract directly)")
 
 
 def cmd_check(args):
@@ -52,7 +58,11 @@ def cmd_check(args):
     if args.min is not None:
         transfers = [t for t in transfers if t["amount"] >= args.min]
     if args.since:
-        since_ts = datetime.fromisoformat(args.since).replace(tzinfo=timezone.utc).timestamp()
+        try:
+            since_dt = datetime.fromisoformat(args.since)
+        except ValueError:
+            raise ValueError(f"invalid --since date '{args.since}', expected e.g. 2026-10-01")
+        since_ts = since_dt.replace(tzinfo=timezone.utc).timestamp()
         transfers = [t for t in transfers if t["timestamp"] >= since_ts]
 
     if args.json:
@@ -109,4 +119,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        raise SystemExit(1)
+    except (urllib.error.URLError, http.client.HTTPException, OSError) as e:
+        print(f"error: couldn't reach TronGrid ({e})", file=sys.stderr)
+        raise SystemExit(1)
