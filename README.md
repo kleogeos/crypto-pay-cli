@@ -58,6 +58,13 @@ Prints a URL to a QR code image your client can scan from a wallet app. Drop it 
 | `--amount` | — | Optional amount hint embedded in the QR payload |
 | `--open` | off | Open the QR code in a browser immediately |
 
+### If a payment landed in the wrong network
+
+Wrong-network transfers (client sent ERC20 when you expected TRC20, etc.) usually can't be
+recovered through this tool alone. A non-custodial swap service (e.g. [SimpleSwap](https://simpleswap.io/?ref=9aabfd28302b),
+affiliate link) can convert the token across networks without an account if the funds did
+arrive somewhere you control.
+
 ### Why TRC20 / USDT first
 
 TRC20 USDT is widely used for freelance payments because transaction fees are near zero and it settles in seconds. Support for other chains (ERC20, Solana, etc.) can be added the same way — TronGrid's API shape generalizes to most block explorer APIs with public endpoints.
